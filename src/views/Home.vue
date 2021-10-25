@@ -3,7 +3,8 @@
     <!-- Header -->
     <div class="header flex">
       <div class="left flex flex-column">
-        <h1>Invoices</h1>
+        <h1>Hello, {{ user?.email }}</h1>
+        <h2>Invoices</h2>
         <span>There are {{ invoiceData.length }} total invoices</span>
       </div>
       <div class="right flex">
@@ -36,14 +37,35 @@
       <h3>There is nothing here</h3>
       <p>Create a new invoice by clicking the New Invoice button and get started</p>
     </div>
+    <div class="header flex">
+      <div class="right flex">
+        <button class="buttonsignout" @click="signOutUser">Sign Out</button>
+      </div>
+    </div>
   </div>
 </template>
-
 <script>
+import { getAuth, signOut } from 'firebase/auth'
+import { useAuthState } from '../firebase/firebaseInit'
+import { useRouter } from 'vue-router'
 import Invoice from "../components/Invoice";
 import { mapMutations, mapState } from "vuex";
 export default {
-  name: "Home",
+  name: 'Home',
+  setup() {
+    const { user } = useAuthState()
+    const auth = getAuth()
+    const router = useRouter()
+    const signOutUser = async () => {
+      try {
+        await signOut(auth)
+        router.push('/')
+      } catch (e) {
+        alert(e.message)
+      }
+    }
+    return { user, signOutUser }
+  },
   data() {
     return {
       filterMenu: null,
@@ -89,7 +111,7 @@ export default {
       });
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -148,7 +170,6 @@ export default {
           }
         }
       }
-
       .button {
         padding: 8px 10px;
         background-color: #7c5dfa;
@@ -193,4 +214,10 @@ export default {
     }
   }
 }
+.buttonsignout {
+  padding: 13px 15px;
+  background-color:#ec5757;
+  border-radius: 50px;
+  margin-top: 20px;
+  }
 </style>
